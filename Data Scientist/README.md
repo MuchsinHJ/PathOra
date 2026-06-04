@@ -1,6 +1,7 @@
 # 📊 Path'Ora — Data Scientist: EDA, Cleaning & Feature Engineering
 
-> **M. Rafli Ramadhan**
+> **Nendi Bagus Setiawan | CDCC179D6Y1598**
+> **Muhammad Sofyan Arifin | CDCC179D6Y0607**
 > Bagian dari Capstone Project CC26-PSU344 | Coding Camp 2026 powered by DBS Foundation
 
 ---
