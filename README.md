@@ -54,7 +54,7 @@ Path'Ora adalah platform **end-to-end** yang menganalisis CV/resume, memprediksi
 
 ### 1. AI Engineer — NLP Model & API
 
-**👤 Fauzan Ahsanudin — CACC012D6Y2364**
+**👤 Fauzan Ahsanudin Alfikri — CACC012D6Y2364**
 
 **Lokasi folder:** `AI Enginerr/`
 
