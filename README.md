@@ -323,7 +323,7 @@ docker-compose up -d
 | Role | Nama | Kontak |
 |------|------|--------|
 | **AI Engineer** | Fauzan Ahsanudin | fauzanahsanudin@gmail.com |
-| **Full Stack Developer** | Muchsin Hidayat Jaelani | muchsinghj10@gmail.com |
+| **Full Stack Developer** | Muchsin Hidayat Julianto | muchsinhj10@gmail.com |
 | **Full Stack Developer** | M. Faridh Awalludin Harahap | cakfarid12@gmail.com |
 | **Data Scientist** | Nendi Bagus Setiawan | nendisetiawan10@gmail.com |
 | **Data Scientist** | Muhammad Sofyan Arifin | muhamadsofyanarifin310@gmail.com |
