@@ -1,0 +1,48 @@
+.button {
+  font-weight: 600;
+  font-family: 'Manrope', sans-serif;
+  padding-top: 0.875rem;
+  padding-bottom: 0.875rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 0.875rem;
+  letter-spacing: 0.05em;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.primary {
+  background-color: #061B0E;
+  color: #ffffff;
+}
+
+.primary:hover:not(:disabled) {
+  background-color: #0a2817; /* darker shade on hover */
+}
+
+.secondary {
+  background-color: #e5e7eb;
+  color: #1f2937;
+}
+
+.secondary:hover:not(:disabled) {
+  background-color: #d1d5db;
+}
+
+.danger {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.danger:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
