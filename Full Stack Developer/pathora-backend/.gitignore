@@ -1,0 +1,84 @@
+# ── Environment Variables ─────────────────────────────────────────────────────
+# Jangan pernah commit file .env yang berisi secrets
+.env
+.env.local
+.env.test
+.env.*.local
+# .env.example BOLEH di-commit (template tanpa nilai rahasia)
+
+# ── Build Output ──────────────────────────────────────────────────────────────
+dist/
+build/
+
+# ── Dependencies ──────────────────────────────────────────────────────────────
+node_modules/
+
+# ── TypeScript ────────────────────────────────────────────────────────────────
+*.tsbuildinfo
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pino.log
+
+# ── Test & Coverage ───────────────────────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ── OS & Editor ───────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Misc ──────────────────────────────────────────────────────────────────────
+*.local
+
+# Additional environment files
+.env.development
+.env.production
+.env.staging
+.env.preview
+
+# Package manager caches
+.npm/
+.pnpm-store/
+.yarn/
+!.yarn/releases/
+!.yarn/plugins/
+!.yarn/sdks/
+!.yarn/versions/
+
+# Tool caches
+.cache/
+.eslintcache
+.vite/
+.turbo/
+
+# Runtime and temporary files
+tmp/
+temp/
+.tmp/
+uploads/
+*.pid
+*.seed
+
+# Test artifacts
+test-results/
+reports/
+junit.xml
+
+# Local database dumps and backups
+*.dump
+*.sql.gz
+*.backup
+
+# Deployment metadata
+.vercel/
+.netlify/
+.railway/
