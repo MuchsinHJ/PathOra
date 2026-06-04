@@ -1,6 +1,6 @@
 # 🧠 Path'Ora — AI Engineer: NLP Model & API
 
-> **Fauzan Ahsanudin — CACC012D6Y2364**
+> **Fauzan Ahsanudin Alfikri — CACC012D6Y2364**
 > Bagian dari Capstone Project CC26-PSU344 | Coding Camp 2026 powered by DBS Foundation
 
 ---
