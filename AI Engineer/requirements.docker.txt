@@ -1,0 +1,22 @@
+# Machine Learning
+tensorflow==2.17.0
+sentence-transformers>=3.0.0
+transformers>=4.30.0
+torch>=2.0.0
+scikit-learn>=1.2.0
+scipy>=1.10.0
+
+# API & Web
+fastapi>=0.100.0
+uvicorn[standard]>=0.22.0
+python-multipart>=0.0.6
+PyMuPDF>=1.23.0
+
+# Utilities
+joblib>=1.2.0
+numpy>=1.24.0
+pillow>=9.5.0
+huggingface_hub>=0.16.0
+
+# LLM
+google-generativeai>=0.3.0
