@@ -1,6 +1,7 @@
 # 💻 Path'Ora — Full Stack Developer: Backend & Frontend
 
-> **Muchsin Hidayat Jaelani**
+> **Muchsin Hidayat Julianto | CFCC179D6Y1817**
+> **M. Faridh Awalludin Harahap | CFCC179D6Y1875**
 > Bagian dari Capstone Project CC26-PSU344 | Coding Camp 2026 powered by DBS Foundation
 
 ---
