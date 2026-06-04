@@ -340,13 +340,51 @@ const AiResponseSchema = z.object({
 
 ## 📈 Performance
 
-| Model | Embedding | Custom Layer | Custom Loss | Akurasi (Estimasi) |
-|-------|-----------|:-----------:|:-----------:|:------------------:|
-| Logistic Regression | IndoBERT 768-d | ❌ | ❌ | ~55-60% |
-| Random Forest | IndoBERT 768-d | ❌ | ❌ | ~65-70% |
-| Simple DNN (3 layer) | IndoBERT 768-d | ❌ | ❌ | ~70-75% |
-| DNN + FeatureAttention | IndoBERT 768-d | ✅ | ❌ | ~75-80% |
-| **PathOra Full** | IndoBERT 768-d FT | ✅ | ✅ FocalLoss | **≥85%** |
+Model telah dievaluasi menggunakan data pengujian (test set) dan berhasil mencapai performa yang sangat baik dengan tingkat akurasi di atas 90%. Berikut adalah hasil evaluasi keseluruhan:
+
+* ✅ **Accuracy:** 90.95% (0.9095)
+* 📉 **Loss:** 2.6718
+
+## 📊 Ringkasan Evaluasi
+Model menunjukkan performa yang stabil dan presisi yang tinggi dalam mengklasifikasikan berbagai kategori profesi, dengan rata-rata metrik sebagai berikut:
+
+| Metric | Score |
+| :--- | :--- |
+| **Macro Avg (F1-Score)** | 0.89 |
+| **Weighted Avg (F1-Score)** | 0.91 |
+| **Total Data Evaluasi (Support)** | 497 |
+
+<details>
+<summary><b>Klik untuk melihat Full Classification Report</b></summary>
+
+| Kategori (Profesi) | Precision | Recall | F1-Score | Support |
+| :--- | :---: | :---: | :---: | :---: |
+| ACCOUNTANT | 0.96 | 1.00 | 0.98 | 24 |
+| ADVOCATE | 1.00 | 0.88 | 0.93 | 24 |
+| AGRICULTURE | 0.90 | 0.69 | 0.78 | 13 |
+| APPAREL | 0.75 | 0.79 | 0.77 | 19 |
+| ARTS | 0.89 | 0.76 | 0.82 | 21 |
+| AUTOMOBILE | 1.00 | 0.71 | 0.83 | 7 |
+| AVIATION | 0.90 | 0.75 | 0.82 | 24 |
+| BANKING | 0.83 | 0.87 | 0.85 | 23 |
+| BPO | 0.50 | 0.75 | 0.60 | 4 |
+| BUSINESS-DEVELOPMENT | 1.00 | 1.00 | 1.00 | 24 |
+| CHEF | 1.00 | 0.88 | 0.93 | 24 |
+| CONSTRUCTION | 1.00 | 0.95 | 0.98 | 22 |
+| CONSULTANT | 1.00 | 1.00 | 1.00 | 23 |
+| DESIGNER | 0.95 | 1.00 | 0.98 | 21 |
+| DIGITAL-MEDIA | 0.94 | 0.84 | 0.89 | 19 |
+| ENGINEERING | 0.96 | 1.00 | 0.98 | 24 |
+| FINANCE | 1.00 | 0.96 | 0.98 | 24 |
+| FITNESS | 0.62 | 0.91 | 0.74 | 23 |
+| HEALTHCARE | 0.88 | 0.91 | 0.89 | 23 |
+| HR | 1.00 | 1.00 | 1.00 | 22 |
+| INFORMATION-TECHNOLOGY | 0.92 | 0.96 | 0.94 | 24 |
+| PUBLIC-RELATIONS | 0.90 | 0.82 | 0.86 | 22 |
+| SALES | 0.92 | 1.00 | 0.96 | 23 |
+| TEACHER | 0.91 | 1.00 | 0.95 | 20 |
+
+</details>
 
 ---
 
