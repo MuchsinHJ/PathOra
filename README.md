@@ -57,6 +57,7 @@ Path'Ora adalah platform **end-to-end** yang menganalisis CV/resume, memprediksi
 **👤 Fauzan Ahsanudin Alfikri — CACC012D6Y2364**
 
 **Lokasi folder:** `AI Enginerr/`
+**Link Model:**[Drive Model](https://drive.google.com/drive/folders/1H1U7XBuDqxFoOAKD97t7DnSHydX9L77q?usp=sharing)
 
 **Tugas:**
 - Membangun model NLP untuk klasifikasi 24 kategori karir dari CV/resume
