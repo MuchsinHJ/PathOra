@@ -407,3 +407,4 @@ Model menunjukkan performa yang stabil dan presisi yang tinggi dalam mengklasifi
 - [SentenceTransformers](https://www.sbert.net/)
 - [Google Gemini API](https://ai.google.dev/)
 - [Dicoding — Menjadi AI Engineer](https://www.dicoding.com/)
+- [Link Model Deep Learning](https://drive.google.com/drive/folders/1H1U7XBuDqxFoOAKD97t7DnSHydX9L77q?usp=sharing)
