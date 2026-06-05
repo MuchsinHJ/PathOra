@@ -12,6 +12,9 @@ Data Scientist bertanggung jawab untuk **membersihkan, menganalisis, dan merekay
 
 ---
 
+## 📈 Streamlit
+https://pathoradashboard.streamlit.app/
+
 ## 📁 Struktur File
 
 ```
