@@ -181,6 +181,9 @@ Path'Ora adalah platform **end-to-end** yang menganalisis CV/resume, memprediksi
 
 **Lokasi folder:** `Data Scientist/`
 
+## 📈 Streamlit
+https://pathoradashboard.streamlit.app/
+
 **File:**
 | File | Deskripsi |
 |------|-----------|
