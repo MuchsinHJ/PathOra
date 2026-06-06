@@ -340,18 +340,18 @@ const AiResponseSchema = z.object({
 
 ## 📈 Performance
 
-Model telah dievaluasi menggunakan data pengujian (test set) dan berhasil mencapai performa yang sangat baik dengan tingkat akurasi di atas 90%. Berikut adalah hasil evaluasi keseluruhan:
+Model telah dievaluasi menggunakan data pengujian (test set) dan berhasil mencapai performa dengan tingkat akurasi sekitar 78.47%. Berikut adalah hasil evaluasi keseluruhan berdasarkan pengujian terakhir:
 
-* ✅ **Accuracy:** 90.95% (0.9095)
-* 📉 **Loss:** 2.6718
+* ✅ **Accuracy:** 78.47% (0.7847)
+* 📉 **Loss:** 0.7309
 
 ## 📊 Ringkasan Evaluasi
-Model menunjukkan performa yang stabil dan presisi yang tinggi dalam mengklasifikasikan berbagai kategori profesi, dengan rata-rata metrik sebagai berikut:
+Model menunjukkan performa klasifikasi untuk 24 kategori profesi dengan rata-rata metrik sebagai berikut:
 
 | Metric | Score |
 | :--- | :--- |
-| **Macro Avg (F1-Score)** | 0.89 |
-| **Weighted Avg (F1-Score)** | 0.91 |
+| **Macro Avg (F1-Score)** | 0.74 |
+| **Weighted Avg (F1-Score)** | 0.78 |
 | **Total Data Evaluasi (Support)** | 497 |
 
 <details>
@@ -359,30 +359,30 @@ Model menunjukkan performa yang stabil dan presisi yang tinggi dalam mengklasifi
 
 | Kategori (Profesi) | Precision | Recall | F1-Score | Support |
 | :--- | :---: | :---: | :---: | :---: |
-| ACCOUNTANT | 0.96 | 1.00 | 0.98 | 24 |
-| ADVOCATE | 1.00 | 0.88 | 0.93 | 24 |
-| AGRICULTURE | 0.90 | 0.69 | 0.78 | 13 |
-| APPAREL | 0.75 | 0.79 | 0.77 | 19 |
-| ARTS | 0.89 | 0.76 | 0.82 | 21 |
-| AUTOMOBILE | 1.00 | 0.71 | 0.83 | 7 |
-| AVIATION | 0.90 | 0.75 | 0.82 | 24 |
-| BANKING | 0.83 | 0.87 | 0.85 | 23 |
-| BPO | 0.50 | 0.75 | 0.60 | 4 |
-| BUSINESS-DEVELOPMENT | 1.00 | 1.00 | 1.00 | 24 |
-| CHEF | 1.00 | 0.88 | 0.93 | 24 |
-| CONSTRUCTION | 1.00 | 0.95 | 0.98 | 22 |
-| CONSULTANT | 1.00 | 1.00 | 1.00 | 23 |
-| DESIGNER | 0.95 | 1.00 | 0.98 | 21 |
-| DIGITAL-MEDIA | 0.94 | 0.84 | 0.89 | 19 |
+| ACCOUNTANT | 1.00 | 1.00 | 1.00 | 24 |
+| ADVOCATE | 0.61 | 0.79 | 0.69 | 24 |
+| AGRICULTURE | 0.50 | 0.62 | 0.55 | 13 |
+| APPAREL | 0.24 | 0.21 | 0.22 | 19 |
+| ARTS | 0.55 | 0.52 | 0.54 | 21 |
+| AUTOMOBILE | 0.67 | 0.29 | 0.40 | 7 |
+| AVIATION | 0.80 | 0.50 | 0.62 | 24 |
+| BANKING | 0.65 | 0.74 | 0.69 | 23 |
+| BPO | 0.33 | 0.25 | 0.29 | 4 |
+| BUSINESS-DEVELOPMENT | 0.96 | 1.00 | 0.98 | 24 |
+| CHEF | 1.00 | 0.79 | 0.88 | 24 |
+| CONSTRUCTION | 0.95 | 0.95 | 0.95 | 22 |
+| CONSULTANT | 0.92 | 0.96 | 0.94 | 23 |
+| DESIGNER | 0.95 | 0.95 | 0.95 | 21 |
+| DIGITAL-MEDIA | 0.74 | 0.74 | 0.74 | 19 |
 | ENGINEERING | 0.96 | 1.00 | 0.98 | 24 |
-| FINANCE | 1.00 | 0.96 | 0.98 | 24 |
-| FITNESS | 0.62 | 0.91 | 0.74 | 23 |
-| HEALTHCARE | 0.88 | 0.91 | 0.89 | 23 |
+| FINANCE | 1.00 | 1.00 | 1.00 | 24 |
+| FITNESS | 0.58 | 0.61 | 0.60 | 23 |
+| HEALTHCARE | 0.62 | 0.57 | 0.59 | 23 |
 | HR | 1.00 | 1.00 | 1.00 | 22 |
-| INFORMATION-TECHNOLOGY | 0.92 | 0.96 | 0.94 | 24 |
-| PUBLIC-RELATIONS | 0.90 | 0.82 | 0.86 | 22 |
-| SALES | 0.92 | 1.00 | 0.96 | 23 |
-| TEACHER | 0.91 | 1.00 | 0.95 | 20 |
+| INFORMATION-TECHNOLOGY | 0.83 | 0.79 | 0.81 | 24 |
+| PUBLIC-RELATIONS | 0.62 | 0.68 | 0.65 | 22 |
+| SALES | 0.88 | 0.96 | 0.92 | 23 |
+| TEACHER | 0.79 | 0.95 | 0.86 | 20 |
 
 </details>
 
