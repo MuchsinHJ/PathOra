@@ -36,7 +36,7 @@ Path'Ora adalah platform **end-to-end** yang menganalisis CV/resume, memprediksi
                                             ▼
                                ┌──────────────────────────────┐
                                │   AI Service (FastAPI)        │
-                               │   Python + TF + IndoBERT      │
+                               │   Python + TF + BERT      │
                                │   Port 8000                   │
                                └──────────────────────────────┘
 ```
@@ -79,7 +79,7 @@ Path'Ora adalah platform **end-to-end** yang menganalisis CV/resume, memprediksi
     └── Label Encoder (24 kategori → numeric)
     ▼
 📓 tf-nlp-pathora.ipynb  [NOTEBOOK UTAMA]
-    ├── IndoBERT embeddings (768-d, PyTorch)
+    ├── BERT embeddings (768-d, PyTorch)
     ├── ★ PyTorch Fine-Tune 3 epoch (boost accuracy)
     ├── TF Functional API Model:
     │     Input(768-d) → FeatureAttention → Dense(512) → BN → Dropout

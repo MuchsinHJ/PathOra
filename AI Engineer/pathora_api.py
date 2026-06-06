@@ -20,7 +20,36 @@ from transformers import AutoTokenizer, AutoModel
 import torch
 import fitz
 
-# Custom Components (Dicoding)
+# ===== BAHASA DETECTION + TRANSLATE (via Gemini) =====
+# Keywords Bahasa Indonesia untuk deteksi
+ID_KEYWORDS = [
+    "dan", "yang", "di", "ke", "dari", "dengan", "untuk", "pada", "adalah",
+    "ini", "itu", "saya", "kami", "kita", "anda", "mereka", "telah", "sudah",
+    "akan", "sedang", "tidak", "dapat", "bisa", "dalam", "sebagai", "oleh",
+    "atau", "karena", " jika", "ketika", "serta", "juga", "lebih", "sangat",
+    "tahun", "pengalaman", "pendidikan", "skill", "kemampuan", "kerja",
+    "perusahaan", "posisi", "tugas", "tanggung jawab"
+]
+
+def is_indonesian(text: str) -> bool:
+    """Deteksi apakah teks berbahasa Indonesia."""
+    text_lower = text.lower()
+    matches = sum(1 for kw in ID_KEYWORDS if kw in text_lower)
+    return matches >= 3  # Minimal 3 kata kunci Indonesia
+
+def translate_to_english(text: str) -> str:
+    """Translate Bahasa Indonesia ke Inggris via Google Translate (gratis, tanpa API key)."""
+    try:
+        from deep_translator import GoogleTranslator
+        translator = GoogleTranslator(source='id', target='en')
+        translated = translator.translate(text[:5000])
+        print(f"[translate] ID → EN: {text[:50]}... → {translated[:50]}...")
+        return translated
+    except Exception as e:
+        print(f"[translate] error: {e}, fallback ke teks asli")
+        return text  # Fallback
+
+# ===== CUSTOM COMPONENTS =====
 class FeatureAttention(keras.layers.Layer):
     def __init__(self, **kw): super().__init__(**kw)
     def build(self, s): self.W = self.add_weight(shape=(s[-1],), initializer="ones", trainable=True)
@@ -37,7 +66,7 @@ def focal_loss(g=2.0, a=0.5):
         return K.mean(a * K.pow(1-tf.gather_nd(p,idx), g) * ce)
     return fn
 
-# Load Models
+# ===== LOAD MODELS =====
 print("Loading models...")
 model = keras.models.load_model("pathora_model.keras", custom_objects={
     "FeatureAttention": FeatureAttention,
@@ -45,9 +74,9 @@ model = keras.models.load_model("pathora_model.keras", custom_objects={
 })
 le = joblib.load("extracted/label_encoder.joblib")
 st = SentenceTransformer("all-MiniLM-L6-v2")
-print("Loading IndoBERT for embeddings...")
-bert_tokenizer = AutoTokenizer.from_pretrained("indobenchmark/indobert-base-p2")
-bert_model = AutoModel.from_pretrained("indobenchmark/indobert-base-p2")
+print("Loading BERT for embeddings...")
+bert_tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+bert_model = AutoModel.from_pretrained("bert-base-uncased")
 bert_model.eval()
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 bert_model.to(device)
@@ -59,17 +88,16 @@ with open("extracted/skill_matches.pkl", "rb") as f:
     all_skills = pickle.load(f)
 print("All models & data loaded!")
 
+# ===== APP SETUP =====
 app = FastAPI(title="PathOra API", version="2.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 # Basic abuse guards
-# Keep high to avoid early rejection, but LLM context still has limits.
 MAX_TEXT_CHARS = 200000
 MAX_PDF_PAGES = 12
 MAX_REQUESTS_PER_MINUTE = 30
 _rate_limit_lock = asyncio.Lock()
 _rate_limit = {}
-
 
 async def enforce_rate_limit(client_ip: str):
     now = time.time()
@@ -82,24 +110,49 @@ async def enforce_rate_limit(client_ip: str):
         hits.append(now)
         _rate_limit[client_ip] = hits
 
+# ===== PREPROCESSING & EXTRACTION =====
+def clean_cv_text(text: str) -> str:
+    """Membersihkan teks CV dari noise, URL, dan karakter aneh."""
+    text = re.sub(r"<[^>]+>", " ", text)
+    text = re.sub(r"http\S+|www\S+|https\S+", " ", text, flags=re.MULTILINE)
+    text = re.sub(r"\S+@\S+", " ", text)
+    text = re.sub(r"[^a-zA-Z0-9.,!?/&+-]", " ", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    return text
+
 def extract_pdf(file_bytes):
     doc = fitz.open(stream=file_bytes, filetype="pdf")
     if doc.page_count > MAX_PDF_PAGES:
         doc.close()
         raise HTTPException(400, f"PDF terlalu panjang. Maks {MAX_PDF_PAGES} halaman.")
-    text = "".join(page.get_text() for page in doc)
+    # Menambahkan newline antar halaman agar kata tidak menempel
+    text = "\n".join(page.get_text("text") for page in doc)
     doc.close()
     return text.strip()
 
+# ===== PREDICTION & SKILL MATCHING =====
 def predict(text):
-    text = re.sub("<[^>]+>", " ", text)
-    text = re.sub(r"\s+", " ", text).strip()
-    # IndoBERT embedding (768-d) - [CLS] token
-    tok = bert_tokenizer([text], padding=True, truncation=True, max_length=128, return_tensors="pt")
+    text = clean_cv_text(text)
+    
+    if not text:
+        return np.zeros(len(le.classes_))
+    
+    if is_indonesian(text):
+        print(f"[predict] Detected Indonesian text, translating...")
+        text = translate_to_english(text)
+    
+    # max_length dinaikkan ke 512
+    tok = bert_tokenizer([text], padding=True, truncation=True, max_length=512, return_tensors="pt")
     tok = {k: v.to(device) for k, v in tok.items()}
     with torch.no_grad():
         out = bert_model(**tok)
     emb = out.last_hidden_state[:, 0, :].cpu().numpy()
+    
+    expected_dim = 1152
+    if emb.shape[1] < expected_dim:
+        padding_size = expected_dim - emb.shape[1]
+        emb = np.pad(emb, ((0, 0), (0, padding_size)), mode='constant', constant_values=0)
+    
     probs = model.predict(emb, verbose=0)[0]
     return probs
 
@@ -149,6 +202,7 @@ def get_skill_profile(text):
 
     return profile
 
+# ===== LLM INTEGRATION =====
 async def call_gemini(prompt, api_key):
     if not api_key:
         return "Gemini API key tidak disertakan. Rekomendasi LLM dilewati."
@@ -199,7 +253,8 @@ async def generate_llm(results, resume_text, extracted_skills, api_key):
     skills_context_text = "\n".join(skills_context)
 
     top = results[0]
-    cats = ", ".join([r["category"] for r in results[:3]])
+    # Ambil index 1 sampai 3 agar tidak bertabrakan dengan prediksi utama
+    cats = ", ".join([r["category"] for r in results[1:4]])
 
     resume_context = _truncate_for_llm(resume_text, 6000)
     prompt = f"""Anda adalah asisten karir AI profesional. Berdasarkan analisis CV dan pencocokan profil berikut, buatlah rekomendasi strategis yang rinci dalam Bahasa Indonesia yang natural.
@@ -238,7 +293,7 @@ def health():
 async def predict_text(
     request: Request,
     text: str = Form(...), 
-    gemini_api_key: str = Form(None) # Ditambahkan parameter API Key
+    gemini_api_key: str = Form(None)
 ):
     await enforce_rate_limit(request.client.host if request.client else "unknown")
     if len(text) > MAX_TEXT_CHARS:
@@ -251,7 +306,8 @@ async def predict_text(
     
     top5 = [p for p in all_preds if p["confidence"] > 0.05][:5]
     top = all_preds[0] if all_preds else {"category": "UNKNOWN", "confidence": 0.0}
-    career_recs = [{"category": p["category"], "match_score": p["confidence"]} for p in all_preds if p["confidence"] > 0.3]
+    # Perbaikan Sinkronisasi
+    career_recs = [{"category": p["category"], "match_score": p["confidence"]} for p in all_preds[:3]]
     
     skill_profile = get_skill_profile(text)
     extracted_skills = []
@@ -263,7 +319,6 @@ async def predict_text(
                 "missing_skills": data["missing_skills"]
             })
     
-    # Passing API key and extracted skills to LLM function
     api_key = gemini_api_key or os.getenv("GEMINI_API_KEY")
     llm = await generate_llm(all_preds, text, extracted_skills, api_key)
     
@@ -282,7 +337,7 @@ async def predict_text(
 async def predict_file(
     request: Request,
     file: UploadFile = File(...), 
-    gemini_api_key: str = Form(None) # Ditambahkan parameter API Key
+    gemini_api_key: str = Form(None) 
 ):
     await enforce_rate_limit(request.client.host if request.client else "unknown")
     if not file.filename.lower().endswith(".pdf"):
@@ -304,7 +359,8 @@ async def predict_file(
     
     top5 = [p for p in all_preds if p["confidence"] > 0.05][:5]
     top = all_preds[0] if all_preds else {"category": "UNKNOWN", "confidence": 0.0}
-    career_recs = [{"category": p["category"], "match_score": p["confidence"]} for p in all_preds if p["confidence"] > 0.3]
+    # Perbaikan Sinkronisasi
+    career_recs = [{"category": p["category"], "match_score": p["confidence"]} for p in all_preds[:3]]
     
     skill_profile = get_skill_profile(text)
     extracted_skills = []
@@ -316,8 +372,7 @@ async def predict_file(
                 "missing_skills": data["missing_skills"]
             })
     
-    # Passing API key and extracted skills to LLM function
-    api_key = gemini_api_key
+    api_key = gemini_api_key or os.getenv("GEMINI_API_KEY")
     llm = await generate_llm(all_preds, text, extracted_skills, api_key)
     
     return {

@@ -7,7 +7,7 @@
 
 ## 📋 Overview
 
-Membangun model NLP untuk **klasifikasi karir** dari teks resume/CV ke dalam **24 kategori pekerjaan**. Model menggunakan **IndoBERT embedding** + **TF Functional API** dengan custom components (FeatureAttention, FocalLoss, PerClassTracker).
+Membangun model NLP untuk **klasifikasi karir** dari teks resume/CV ke dalam **24 kategori pekerjaan**. Model menggunakan **BERT embedding** + **TF Functional API** dengan custom components (FeatureAttention, FocalLoss, PerClassTracker).
 
 **Akurasi target:** ≥85%
 
@@ -19,7 +19,7 @@ Membangun model NLP untuk **klasifikasi karir** dari teks resume/CV ke dalam **2
 AI Enginerr/
 │
 ├── tf-nlp-pathora.ipynb         ★ NOTEBOOK UTAMA
-│   ├── IndoBERT embeddings (768-d)
+│   ├── BERT embeddings (768-d)
 │   ├── PyTorch fine-tune 3 epoch
 │   ├── TF Functional API + Custom Components
 │   ├── Training + Evaluation
@@ -59,7 +59,7 @@ AI Enginerr/
 └────────────────────┬───────────────────────────────┘
                      ▼
 ┌────────────────────────────────────────────────────┐
-│  Tokenizer + AutoModel (IndoBERT, PyTorch)         │
+│  Tokenizer + AutoModel (BERT, PyTorch)         │
 │  → [CLS] embedding [768-d]                        │
 │  ★ Fine-tuned 3 epoch (task-specific)              │
 └────────────────────┬───────────────────────────────┘
@@ -147,7 +147,7 @@ Jalankan **`tf-nlp-pathora.ipynb`** secara berurutan:
 | Cell | Proses | Estimasi Waktu |
 |:----:|--------|:--------------:|
 | 1 | Setup & Library | ~1 menit |
-| 2 | Load Data + IndoBERT embeddings | ~5 menit |
+| 2 | Load Data + BERT embeddings | ~5 menit |
 | 3 | **PyTorch Fine-Tune (3 epoch)** | **~10 menit (GPU)** / ~1 jam (CPU) |
 | 4 | Train/Test Split | ~1 detik |
 | 5-7 | Custom Components (FeatureAttention, FocalLoss, PerClassTracker) | Instant |
@@ -158,7 +158,7 @@ Jalankan **`tf-nlp-pathora.ipynb`** secara berurutan:
 | 12 | Inference Test | ~1 menit |
 | 13 | Dicoding Compliance Check | Instant |
 
-**Catatan:** GPU sangat disarankan untuk fine-tuning IndoBERT. Tanpa GPU, gunakan mode CPU dan persiapkan waktu ~3 jam total.
+**Catatan:** GPU sangat disarankan untuk fine-tuning BERT. Tanpa GPU, gunakan mode CPU dan persiapkan waktu ~3 jam total.
 
 #### 3. Start API Server
 
@@ -273,7 +273,7 @@ docker run -p 8000:8000 pathora-ai
 
 | Parameter | Nilai | Keterangan |
 |-----------|-------|------------|
-| Max token per resume | 128 | IndoBERT tokenizer |
+| Max token per resume | 128 | BERT tokenizer |
 | Batch size training | 16 | TF Dataset |
 | Learning rate (classifier) | 5e-4 | Adam optimizer |
 | Learning rate (fine-tune) | 2e-5 | AdamW |
@@ -390,18 +390,18 @@ Model menunjukkan performa yang stabil dan presisi yang tinggi dalam mengklasifi
 
 ## 📝 Catatan Penting
 
-1. **GPU sangat disarankan** untuk training. Tanpa GPU, proses fine-tune IndoBERT bisa memakan waktu 1-2 jam.
+1. **GPU sangat disarankan** untuk training. Tanpa GPU, proses fine-tune BERT bisa memakan waktu 1-2 jam.
 2. **transformers 5.x** tidak mendukung `TFAutoModel`. Gunakan pendekatan hybrid: `AutoModel` (PyTorch) untuk embeddings + TF untuk classifier.
 3. **TF_USE_LEGACY_KERAS=1** harus diset untuk kompatibilitas TensorFlow 2.17 dengan Keras 3.
 4. **Gemini API key** opsional — tanpa key, fitur rekomendasi LLM akan mengembalikan pesan fallback.
-5. **Model .keras** tidak termasuk di repository (ukuran ~1 MB untuk classifier, ~450 MB dengan IndoBERT). Generate via notebook.
+5. **Model .keras** tidak termasuk di repository (ukuran ~1 MB untuk classifier, ~450 MB dengan BERT). Generate via notebook.
 
 ---
 
 ## 📚 Referensi
 
 - [TensorFlow Functional API Guide](https://www.tensorflow.org/guide/keras/functional)
-- [IndoBERT — indobenchmark/indobert-base-p2](https://huggingface.co/indobenchmark/indobert-base-p2)
+- [BERT — indobenchmark/indobert-base-p2](https://huggingface.co/indobenchmark/indobert-base-p2)
 - [Focal Loss for Dense Object Detection](https://arxiv.org/abs/1708.02002)
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
 - [SentenceTransformers](https://www.sbert.net/)
