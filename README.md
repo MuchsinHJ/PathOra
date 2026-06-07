@@ -36,7 +36,8 @@ Path'Ora adalah platform **end-to-end** yang menganalisis CV/resume, memprediksi
                                             ▼
                                ┌──────────────────────────────┐
                                │   AI Service (FastAPI)        │
-                               │   Python + TF + BERT      │
+                               │   Python + TF + BERT          │
+                               │   bert-finetuned/ + .keras    │
                                │   Port 8000                   │
                                └──────────────────────────────┘
 ```
@@ -56,9 +57,9 @@ Path'Ora adalah platform **end-to-end** yang menganalisis CV/resume, memprediksi
 
 **👤 Fauzan Ahsanudin Alfikri — CACC012D6Y2364**
 
-**Lokasi folder:** `AI Enginerr/`
+**Lokasi folder:** `AI Engineer/`
 
-**Link Model:**[Drive Model](https://drive.google.com/drive/folders/1H1U7XBuDqxFoOAKD97t7DnSHydX9L77q?usp=sharing)
+**Link Model:** [Google Drive](https://drive.google.com/drive/folders/1H1U7XBuDqxFoOAKD97t7DnSHydX9L77q?usp=sharing)
 
 **Tugas:**
 - Membangun model NLP untuk klasifikasi 24 kategori karir dari CV/resume
@@ -80,7 +81,7 @@ Path'Ora adalah platform **end-to-end** yang menganalisis CV/resume, memprediksi
     ▼
 📓 tf-nlp-pathora.ipynb  [NOTEBOOK UTAMA]
     ├── BERT embeddings (768-d, PyTorch)
-    ├── ★ PyTorch Fine-Tune 3 epoch (boost accuracy)
+    ├── ★ PyTorch Fine-Tune 3 epoch → save ke bert-finetuned/
     ├── TF Functional API Model:
     │     Input(768-d) → FeatureAttention → Dense(512) → BN → Dropout
     │     → Dense(256) → BN → Dropout → Dense(128) → BN → Dropout
@@ -89,11 +90,12 @@ Path'Ora adalah platform **end-to-end** yang menganalisis CV/resume, memprediksi
     ├── ★ Custom Loss: FocalLoss (gamma=2.0, alpha=0.85)
     ├── ★ Custom Callback: PerClassTracker
     ├── Class weights untuk handle imbalance
-    └── Save: .keras + SavedModel
+    └── Save: .keras + SavedModel + bert-finetuned/
     ▼
 🐍 pathora_api.py  [FASTAPI SERVER]
     ├── POST /predict → prediksi dari teks
     ├── POST /predict/file → prediksi dari PDF
+    ├── Load model dari bert-finetuned/ (embedding KONSISTEN)
     ├── Skill extraction (cosine similarity)
     ├── RAG context → Gemini LLM recommendation
     ├── Rate limiting (30 req/min/IP)
@@ -232,7 +234,8 @@ pip install -r requirements.docker.txt
 
 # Train model
 # Buka tf-nlp-pathora.ipynb di Jupyter, jalankan semua cell
-# Butuh GPU ~1-2 jam. Tanpa GPU ~3-4 jam.
+# Butuh GPU ~10-15 menit. Tanpa GPU ~3 jam.
+# NOTE: Notebook akan menghasilkan bert-finetuned/ + .keras
 
 # Start API server
 python pathora_api.py 8000
@@ -315,6 +318,7 @@ docker-compose up -d
 | **AI/ML** | Python, TensorFlow, PyTorch, Transformers, SentenceTransformers, scikit-learn |
 | **AI API** | FastAPI, Uvicorn, PyMuPDF |
 | **AI LLM** | Gemini API (RAG-enhanced prompting) |
+| **AI Model** | bert-base-uncased (fine-tuned) + TF Functional API |
 | **Backend** | Node.js, TypeScript, Express, PostgreSQL, Knex.js, Zod, JWT |
 | **Frontend** | React, Vite, TypeScript, Tailwind CSS, Zustand, React Router |
 | **Infra** | Docker, GitHub Actions |
