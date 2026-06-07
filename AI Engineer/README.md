@@ -16,11 +16,11 @@ Membangun model NLP untuk **klasifikasi karir** dari teks resume/CV ke dalam **2
 ## 📁 Struktur File
 
 ```
-AI Enginerr/
+AI Engineer/
 │
 ├── tf-nlp-pathora.ipynb         ★ NOTEBOOK UTAMA
 │   ├── BERT embeddings (768-d)
-│   ├── PyTorch fine-tune 3 epoch
+│   ├── PyTorch fine-tune 3 epoch → save ke bert-finetuned/
 │   ├── TF Functional API + Custom Components
 │   ├── Training + Evaluation
 │   └── Save .keras / SavedModel
@@ -38,6 +38,11 @@ AI Enginerr/
 │
 ├── inference_pathora.py         CLI inference script
 │
+├── bert-finetuned/              ★ Fine-tuned BERT model + tokenizer
+│   ├── config.json                  (dihasilkan oleh notebook training)
+│   ├── pytorch_model.bin
+│   └── vocab.txt
+│
 ├── extracted/
 │   ├── Resume/Pathora_cleanData.csv  ← Dataset (dari Data Scientist)
 │   ├── label_encoder.joblib          ← 24 kategori → numeric
@@ -45,6 +50,10 @@ AI Enginerr/
 │   ├── skill_matches.pkl             ← Precomputed cosine similarity
 │   └── resume_embeddings.npy         ← ST embeddings 384-d
 │
+├── pathora_model.keras          TF classifier (input 768-d, output 24)
+├── pathora_light.keras          Model ringan (arsitektur sama)
+├── pathora_savedmodel/          TF SavedModel format
+├── Dockerfile                   Docker build
 ├── requirements.docker.txt      Python dependencies
 └── README.md                    Dokumentasi ini
 ```
@@ -59,9 +68,10 @@ AI Enginerr/
 └────────────────────┬───────────────────────────────┘
                      ▼
 ┌────────────────────────────────────────────────────┐
-│  Tokenizer + AutoModel (BERT, PyTorch)         │
+│  Tokenizer + AutoModel (BERT, PyTorch)             │
 │  → [CLS] embedding [768-d]                        │
 │  ★ Fine-tuned 3 epoch (task-specific)              │
+│  ★ Disimpan ke bert-finetuned/                     │
 └────────────────────┬───────────────────────────────┘
                      ▼
 ┌────────────────────────────────────────────────────┐
@@ -149,21 +159,22 @@ Jalankan **`tf-nlp-pathora.ipynb`** secara berurutan:
 | 1 | Setup & Library | ~1 menit |
 | 2 | Load Data + BERT embeddings | ~5 menit |
 | 3 | **PyTorch Fine-Tune (3 epoch)** | **~10 menit (GPU)** / ~1 jam (CPU) |
-| 4 | Train/Test Split | ~1 detik |
-| 5-7 | Custom Components (FeatureAttention, FocalLoss, PerClassTracker) | Instant |
-| 8 | TF Functional API Model | ~1 menit |
-| 9 | **Training (max 50 epoch)** | **~15 menit (GPU)** / ~2 jam (CPU) |
-| 10 | Evaluation + Classification Report | ~1 menit |
-| 11 | Save .keras + SavedModel | ~1 menit |
-| 12 | Inference Test | ~1 menit |
-| 13 | Dicoding Compliance Check | Instant |
+| 4 | Save Fine-Tuned BERT → `bert-finetuned/` | ~1 menit |
+| 5 | Extract embeddings (Train/Test split) | ~5 menit |
+| 6-8 | Custom Components (FeatureAttention, FocalLoss, PerClassTracker) | Instant |
+| 9 | TF Functional API Model | ~1 menit |
+| 10 | **Training (max 50 epoch)** | **~15 menit (GPU)** / ~2 jam (CPU) |
+| 11 | Evaluation + Classification Report | ~1 menit |
+| 12 | Save .keras + SavedModel | ~1 menit |
+| 13 | Inference Test | ~1 menit |
+| 14 | Dicoding Compliance Check | Instant |
 
 **Catatan:** GPU sangat disarankan untuk fine-tuning BERT. Tanpa GPU, gunakan mode CPU dan persiapkan waktu ~3 jam total.
 
 #### 3. Start API Server
 
 ```bash
-# Dari folder AI Enginerr/
+# Dari folder AI Engineer/
 python pathora_api.py 8000
 ```
 
@@ -340,7 +351,7 @@ const AiResponseSchema = z.object({
 
 ## 📈 Performance
 
-Model telah dievaluasi menggunakan data pengujian (test set) dan berhasil mencapai performa dengan tingkat akurasi sekitar 78.47%. Berikut adalah hasil evaluasi keseluruhan berdasarkan pengujian terakhir:
+Model telah dievaluasi menggunakan data pengujian (test set) dan berhasil mencapai performa dengan tingkat akurasi sekitar **78.47%**. Berikut adalah hasil evaluasi keseluruhan berdasarkan pengujian terakhir:
 
 * ✅ **Accuracy:** 78.47% (0.7847)
 * 📉 **Loss:** 0.7309
@@ -388,20 +399,56 @@ Model menunjukkan performa klasifikasi untuk 24 kategori profesi dengan rata-rat
 
 ---
 
+## ⚠️ Critical: Embedding Consistency
+
+**🔴 Masalah Kritis yang Pernah Terjadi:**
+
+Awalnya, API inference menggunakan `bert-base-uncased` (model pre-trained yang BELUM di-fine-tune) sementara training menggunakan BERT yang SUDAH di-fine-tune. Akibatnya, embeddings yang dihasilkan berbeda total → prediksi API selalu salah (misal, resume IT diprediksi jadi CHEF/SALES).
+
+**✅ Solusi:**
+
+1. Notebook fine-tune menyimpan model BERT ke direktori **`bert-finetuned/`**
+2. API (`pathora_api.py`) me-load model dari **`bert-finetuned/`** — bukan dari `bert-base-uncased`
+3. Training dan inference menggunakan **model embedding yang IDENTIK**
+
+```
+Training:   bert-base-uncased → Fine-tune → bert-finetuned/ → Extract embeddings → TF Classifier
+                                                                          │
+Inference:  bert-finetuned/ ──────────────────────────────────────────────┘ ← SAMA!
+```
+
+**Pastikan `bert-finetuned/` ada sebelum menjalankan API.** Folder ini dihasilkan otomatis saat notebook training dijalankan penuh.
+
+---
+
+## 🚨 Troubleshoot: Prediksi API Salah
+
+Jika prediksi API tidak sesuai (misal CV IT diprediksi CHEF/SALES dengan confidence rendah):
+
+| Kemungkinan | Cek | Solusi |
+|-------------|-----|--------|
+| Embedding mismatch | API load dari `bert-base-uncased`? | Ganti ke `bert-finetuned/` |
+| `bert-finetuned/` hilang | Folder tidak ada? | Jalankan ulang notebook training |
+| Model file lama | `pathora_model.keras` masih 1152-d? | Training ulang dengan notebook terbaru |
+| Preprocessing beda | API tidak lowercase/clean? | Update `clean_cv_text()` |
+
+---
+
 ## 📝 Catatan Penting
 
-1. **GPU sangat disarankan** untuk training. Tanpa GPU, proses fine-tune BERT bisa memakan waktu 1-2 jam.
-2. **transformers 5.x** tidak mendukung `TFAutoModel`. Gunakan pendekatan hybrid: `AutoModel` (PyTorch) untuk embeddings + TF untuk classifier.
-3. **TF_USE_LEGACY_KERAS=1** harus diset untuk kompatibilitas TensorFlow 2.17 dengan Keras 3.
-4. **Gemini API key** opsional — tanpa key, fitur rekomendasi LLM akan mengembalikan pesan fallback.
-5. **Model .keras** tidak termasuk di repository (ukuran ~1 MB untuk classifier, ~450 MB dengan BERT). Generate via notebook.
+1. **`bert-finetuned/` WAJIB ada** — tanpa folder ini, API akan menghasilkan prediksi yang salah. Generate via notebook training.
+2. **GPU sangat disarankan** untuk training. Tanpa GPU, proses fine-tune BERT bisa memakan waktu 1-2 jam.
+3. **transformers 5.x** tidak mendukung `TFAutoModel`. Gunakan pendekatan hybrid: `AutoModel` (PyTorch) untuk embeddings + TF untuk classifier.
+4. **TF_USE_LEGACY_KERAS=1** harus diset untuk kompatibilitas TensorFlow 2.17 dengan Keras 3.
+5. **Gemini API key** opsional — tanpa key, fitur rekomendasi LLM akan mengembalikan pesan fallback.
+6. **Model file tidak termasuk di repository** — `.keras` (~6 MB), `bert-finetuned/` (~440 MB), dan `pathora_savedmodel/` di-generate via notebook. Download dari Google Drive link jika diperlukan.
 
 ---
 
 ## 📚 Referensi
 
 - [TensorFlow Functional API Guide](https://www.tensorflow.org/guide/keras/functional)
-- [BERT — indobenchmark/indobert-base-p2](https://huggingface.co/indobenchmark/indobert-base-p2)
+- [BERT — google-bert/bert-base-uncased](https://huggingface.co/google-bert/bert-base-uncased)
 - [Focal Loss for Dense Object Detection](https://arxiv.org/abs/1708.02002)
 - [FastAPI Documentation](https://fastapi.tiangolo.com/)
 - [SentenceTransformers](https://www.sbert.net/)
