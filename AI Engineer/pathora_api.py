@@ -93,7 +93,7 @@ app = FastAPI(title="PathOra API", version="2.0.0")
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 # Basic abuse guards
-MAX_TEXT_CHARS = 200000
+MAX_TEXT_CHARS = 20000
 MAX_PDF_PAGES = 12
 MAX_REQUESTS_PER_MINUTE = 30
 _rate_limit_lock = asyncio.Lock()
@@ -141,17 +141,14 @@ def predict(text):
         print(f"[predict] Detected Indonesian text, translating...")
         text = translate_to_english(text)
     
-    # max_length dinaikkan ke 512
-    tok = bert_tokenizer([text], padding=True, truncation=True, max_length=512, return_tensors="pt")
+    # max_length 128 (sesuai training)
+    tok = bert_tokenizer([text], padding=True, truncation=True, max_length=128, return_tensors="pt")
     tok = {k: v.to(device) for k, v in tok.items()}
     with torch.no_grad():
         out = bert_model(**tok)
     emb = out.last_hidden_state[:, 0, :].cpu().numpy()
     
-    expected_dim = 1152
-    if emb.shape[1] < expected_dim:
-        padding_size = expected_dim - emb.shape[1]
-        emb = np.pad(emb, ((0, 0), (0, padding_size)), mode='constant', constant_values=0)
+
     
     probs = model.predict(emb, verbose=0)[0]
     return probs
