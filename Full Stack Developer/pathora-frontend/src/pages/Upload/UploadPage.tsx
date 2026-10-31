@@ -13,6 +13,7 @@ import { useAnalysis } from "../../hooks/useAnalysis";
 
 const UploadPage: React.FC = () => {
   const navigate = useNavigate();
+  const [isDevelopmentNoticeOpen, setDevelopmentNoticeOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadedCvId, setUploadedCvId] = useState<string | null>(null);
   const [analysisFailed, setAnalysisFailed] = useState(false);
@@ -47,21 +48,8 @@ const UploadPage: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setSelectedFile(file);
-    setUploadedCvId(null);
-    setAnalysisFailed(false);
-    setFeedbackOpen(false);
-
-    const uploadResult = await uploadCV({
-      source_type: "file",
-      file,
-    });
-
-    if (!uploadResult) return;
-
-    setUploadedCvId(uploadResult.id);
-    setFeedbackOpen(true);
-    await runAnalysis(uploadResult.id);
+    setDevelopmentNoticeOpen(true);
+    e.target.value = "";
   };
 
   const isProcessing = isLoading || isAnalyzing;
@@ -157,6 +145,34 @@ const UploadPage: React.FC = () => {
       </div>
 
       {/* Modal Feedback (Sudah cukup responsif, hanya memastikan padding aman di layar kecil) */}
+      {isDevelopmentNoticeOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+            <button
+              type="button"
+              onClick={() => setDevelopmentNoticeOpen(false)}
+              className="absolute right-4 top-4 rounded-full p-1 text-gray-500 hover:bg-gray-100"
+              aria-label="Tutup pesan"
+            >
+              <X size={18} />
+            </button>
+            <h2 className="pr-8 text-2xl font-semibold font-['Newsreader'] text-[#102619]">
+              Fitur sedang dalam tahap pengembangan
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-gray-600 font-['Manrope',_sans-serif]">
+              Analisis CV dengan AI belum tersedia. Silakan coba lagi setelah fitur selesai diperbaiki.
+            </p>
+            <button
+              type="button"
+              onClick={() => setDevelopmentNoticeOpen(false)}
+              className="mt-5 w-full rounded-lg bg-[#102619] px-4 py-2 text-sm font-medium text-white hover:bg-[#1a3a26]"
+            >
+              Mengerti
+            </button>
+          </div>
+        </div>
+      )}
+
       {showFeedbackModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">

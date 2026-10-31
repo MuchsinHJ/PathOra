@@ -1,6 +1,6 @@
 import { apiClient } from "./api.client";
 import { API_ROUTES } from "../constants/api-routes";
-import { ENV } from "../constants/environment";
+import { ENV, FEATURE_IN_DEVELOPMENT_MESSAGE } from "../constants/environment";
 import { ApiResponse } from "../types/api";
 import {
   CV,
@@ -94,6 +94,14 @@ export const cvService = {
    * Ini mengirim CV ke AI service dan menyimpan hasil
    */
   async analyzeCV(cvId: string): Promise<AnalyzeResponse> {
+    if (!ENV.AI_FEATURE_ENABLED) {
+      throw {
+        code: "AI_FEATURE_UNAVAILABLE",
+        message: FEATURE_IN_DEVELOPMENT_MESSAGE,
+        status: 503,
+      };
+    }
+
     try {
       const response = await apiClient.post<ApiResponse<AnalyzeResponse>>(
         API_ROUTES.CVS.ANALYZE(cvId),

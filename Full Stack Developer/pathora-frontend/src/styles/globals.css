@@ -36,6 +36,10 @@
   html.dark .bg-\[\#FFFFFF\] {
     background-color: var(--pathora-surface) !important;
   }
+  
+  html.dark .brightness-0 {
+    filter: brightness(0) invert(1);
+  }
 
   html.dark aside.bg-\[\#FFFFFF\],
   html.dark nav.bg-\[\#F4F9F4\],

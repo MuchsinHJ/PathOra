@@ -33,7 +33,7 @@ const ProfilePage: React.FC = () => {
   return (
     <AppLayout>
       {/* Container utama: Padding px-4 untuk mobile, px-10 untuk desktop */}
-      <div className="min-h-screen bg-[#F7F6F2] px-4 md:px-10 pt-4 md:pt-0 pb-8 font-['Newsreader']">
+      <div className="min-h-screen px-4 md:px-10 pt-4 md:pt-0 pb-8 font-['Newsreader']">
         <div className="mb-6 md:mb-8">
           <h1 className="text-3xl md:text-5xl font-bold font-['Newsreader'] text-gray-900">
             Profile
