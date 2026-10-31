@@ -10,7 +10,7 @@ interface Props {
   onDeleted?: () => Promise<void> | void;
 }
 
-const Riwayat: React.FC<Props> = ({ history, onDeleted }) => {
+const DashboardHistory: React.FC<Props> = ({ history, onDeleted }) => {
   const navigate = useNavigate();
   const [deletingCvId, setDeletingCvId] = useState<string | null>(null);
   const [pendingDeleteCvId, setPendingDeleteCvId] = useState<string | null>(
@@ -182,4 +182,4 @@ const Riwayat: React.FC<Props> = ({ history, onDeleted }) => {
   );
 };
 
-export default Riwayat;
+export default DashboardHistory;

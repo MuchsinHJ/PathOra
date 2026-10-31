@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import AppLayout from "../../components/layout/AppLayout";
-import JobRecommendationCard from "./Job";
+import JobRecommendationCard from "../../components/career/JobRecommendationCard";
 import { useCareerRecs } from "../../hooks/useCareerRecs";
 import { analysisService } from "../../services/analysis.service";
 import { Analysis } from "../../types/analysis";

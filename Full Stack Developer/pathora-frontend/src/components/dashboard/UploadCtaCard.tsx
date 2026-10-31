@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Upload } from "lucide-react";
 
-const UploadCv: React.FC = () => {
+const UploadCtaCard: React.FC = () => {
   const navigate = useNavigate();
   return (
     <div 
@@ -30,4 +30,4 @@ const UploadCv: React.FC = () => {
   );
 };
 
-export default UploadCv;
+export default UploadCtaCard;

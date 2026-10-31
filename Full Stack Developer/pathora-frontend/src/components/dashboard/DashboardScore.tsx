@@ -5,7 +5,7 @@ interface Props {
   summary: DashboardSummary | null;
 }
 
-const SkorDashboard: React.FC<Props> = ({ summary }) => {
+const DashboardScore: React.FC<Props> = ({ summary }) => {
   const latestAnalysis = summary?.latest_analysis;
   const confidence = latestAnalysis
     ? Math.round(latestAnalysis.confidence * 100)
@@ -62,4 +62,4 @@ const SkorDashboard: React.FC<Props> = ({ summary }) => {
   );
 };
 
-export default SkorDashboard;
+export default DashboardScore;

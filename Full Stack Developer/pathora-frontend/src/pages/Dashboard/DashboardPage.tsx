@@ -1,8 +1,8 @@
 import React from "react";
 import AppLayout from "../../components/layout/AppLayout";
-import SkorDashboard from "./SkorDashboard";
-import UploadCv from "./UploadCv";
-import Riwayat from "./Riwayat";
+import DashboardScore from "../../components/dashboard/DashboardScore";
+import UploadCtaCard from "../../components/dashboard/UploadCtaCard";
+import DashboardHistory from "../../components/dashboard/DashboardHistory";
 import { useDashboard } from "../../hooks/useDashboard";
 
 const DashboardPage: React.FC = () => {
@@ -36,9 +36,9 @@ const DashboardPage: React.FC = () => {
           {isLoading ? (
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 h-64 animate-pulse" />
           ) : (
-            <SkorDashboard summary={summary} />
+            <DashboardScore summary={summary} />
           )}
-          <UploadCv />
+          <UploadCtaCard />
         </div>
 
         {/* Section Riwayat */}
@@ -48,7 +48,7 @@ const DashboardPage: React.FC = () => {
               Memuat riwayat analisis...
             </div>
           ) : (
-            <Riwayat history={history} onDeleted={refresh} />
+            <DashboardHistory history={history} onDeleted={refresh} />
           )}
         </div>
         
